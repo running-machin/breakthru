@@ -53,19 +53,30 @@ class gamestate():
                     end_piece = self.board[end_row][end_col]
                     if end_piece == '--': # empty space valid
                         moves.append(Move((r,c),(end_row,end_col),self.board))
-                        
-                if c-1 >= 0 : #enemy capture to the left
-                    if self.board [r+1][c-1][0] == enemy_color: #enemy piece to capture
+                    elif self.board [r+1][c-1][0] == enemy_color: #enemy piece to capture
                         moves.append(Move((r,c),(r+1,c-1),self.board))
-                    if self.board [r-1][c-1][0] == enemy_color: #enemy piece to capture
+                    elif self.board [r-1][c-1][0] == enemy_color: #enemy piece to capture
                         moves.append(Move((r,c),(r-1,c-1),self.board))
-                if c+1 <= 10 : #enemy capture to the right
-                    if self.board [r+1][c+1][0]== enemy_color:#enemy piece to capture
+                    elif self.board [r+1][c+1][0]== enemy_color:#enemy piece to capture
                         moves.append(Move((r,c),(r+1,c+1),self.board))
-                    if self.board [r-1][c+1][0]== enemy_color:#enemy piece to capture
+                    elif self.board [r-1][c+1][0]== enemy_color:#enemy piece to capture
                         moves.append(Move((r,c),(r-1,c+1),self.board))
-                else:
-                    break
+                        break
+                    else: break
+                
+                    
+                else: break
+        # if c-1 >= 0 : #enemy capture to the left
+        #     if self.board [r+1][c-1][0] == enemy_color: #enemy piece to capture
+        #         moves.append(Move((r,c),(r+1,c-1),self.board))
+        #     if self.board [r-1][c-1][0] == enemy_color: #enemy piece to capture
+        #         moves.append(Move((r,c),(r-1,c-1),self.board))
+        # if c+1 <= 10 : #enemy capture to the right
+        #     if self.board [r+1][c+1][0]== enemy_color:#enemy piece to capture
+        #         moves.append(Move((r,c),(r+1,c+1),self.board))
+        #     if self.board [r-1][c+1][0]== enemy_color:#enemy piece to capture
+        #         moves.append(Move((r,c),(r-1,c+1),self.board))
+        
 
     def getflagmoves(self,r,c,moves):
         directions = ((-1,0),(0,-1),(1,0),(0,1)) #up, left, down, right
