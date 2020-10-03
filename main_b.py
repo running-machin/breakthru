@@ -45,8 +45,10 @@ def main():
                     if move in validmoves:
                         gs.makemove(move)
                         movemade = True
-                    sqselected=()
-                    playerclicks= []
+                        sqselected=()
+                        playerclicks= []
+                    else:
+                        playerclicks= [sqselected]    
             elif e.type == p.KEYDOWN:
                 if e.key ==p.K_z:
                      gs.undomove()
