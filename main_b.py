@@ -18,7 +18,7 @@ def main():
     clock = p.time.Clock()
     screen.fill(p.Color('white'))
     gs = engine_b.gamestate()
-    validmoves = gs.getvalidmoves()
+    validmoves,capturemoves = gs.getvalidmoves()
     movemade = False
     animate =False
     loadimages()
@@ -27,49 +27,50 @@ def main():
     playerclicks= []
     
     while running:
-        for e in p.event.get():
-            if e.type ==p.QUIT:
-                running =False
-            elif e.type == p.MOUSEBUTTONDOWN:
-                location = p.mouse.get_pos()
-                col = location[0]//SQ_SIZE
-                row = location[1]// SQ_SIZE
-                if sqselected ==(row,col ):
-                    sqselected= ()
-                    playerclicks= []
-                else:
-                    sqselected= (row,col)
-                    playerclicks.append(sqselected)
-                if len(playerclicks) == 2:
-                    move =engine_b.Move(playerclicks[0],playerclicks[1],gs.board)    
-                    print(move.getchessnotation())
-                    if move in validmoves :
-                        gs.makemove(move)
-                        movemade = True
-                        animate = True
-                        sqselected =()
-                        playerclicks =[]
-                    elif move in capturemoves:
-                        gs.makemove(move)
-                        movemade = True
-                        animate = True
-                        sqselected = ()
-                        playerclicks = []
+        if gs.breaktimer !=0:
+            for e in p.event.get():
+                if e.type ==p.QUIT:
+                    running =False
+                elif e.type == p.MOUSEBUTTONDOWN:
+                    location = p.mouse.get_pos()
+                    col = location[0]//SQ_SIZE
+                    row = location[1]// SQ_SIZE
+                    if sqselected ==(row,col ):
+                        sqselected= ()
+                        playerclicks= []
                     else:
-                        playerclicks = [sqselected]                    
-                    
-            elif e.type == p.KEYDOWN:
-                if e.key ==p.K_z:
-                     gs.undomove()
-                     movemade = True
-                     animate = False
-                if e.key == p.K_r:
-                    gs= engine_b.gamestate()
-                    validmoves,capturemoves = gs.getvalidmoves()
-                    sqselected =()
-                    playerclicks= []
-                    movemade = False
-                    animate = False
+                        sqselected= (row,col)
+                        playerclicks.append(sqselected)
+                    if len(playerclicks) == 2:
+                        move =engine_b.Move(playerclicks[0],playerclicks[1],gs.board)    
+                        print(move.getchessnotation())
+                        if move in validmoves :
+                            gs.makemove(move)
+                            movemade = True
+                            animate = True
+                            sqselected =()
+                            playerclicks =[]
+                        elif move in capturemoves:
+                            gs.makemove(move)
+                            movemade = True
+                            animate = True
+                            sqselected = ()
+                            playerclicks = []
+                        else:
+                            playerclicks = [sqselected]                    
+                        
+                elif e.type == p.KEYDOWN:
+                    if e.key ==p.K_z:
+                        gs.undomove()
+                        movemade = True
+                        animate = False
+                    if e.key == p.K_r:
+                        gs= engine_b.gamestate()
+                        validmoves,capturemoves = gs.getvalidmoves()
+                        sqselected =()
+                        playerclicks= []
+                        movemade = False
+                        animate = False
 
        
         if movemade:
@@ -87,10 +88,10 @@ def main():
 
 def drawgamestate(screen, gs,validmoves,capturemoves,sqselected):
     drawboard(screen)
+    drawpieces(screen, gs.board)
     highlightsquares(screen,gs,validmoves,sqselected,p.Color('yellow'))
     highlightsquares(screen,gs,capturemoves,sqselected,p.Color('red'))
-    drawpieces(screen, gs.board)
-
+    
 def highlightsquares(screen,gs,moves,sqselected,color):
     if sqselected !=():
         r,c,= sqselected
