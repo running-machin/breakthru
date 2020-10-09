@@ -17,57 +17,60 @@ class gamestate():
         self.movelog = []
         self.piececaptured= []
         self.movefunctions = {'E':self.getescortmoves,'F':self.getflagmoves}
-        self.secondmove = False
-        self.breaktimer = 0
-        self.silvercount = 20
-        self.goldcount = 12
+        self.secondmove = 0
+        self.breaktimer = 0 #counter
+        self.silvercount = 20 #counting no.of silver escorts
+        self.goldcount = 12 #counting no. of gold escorts
         self.goldwin = False
         self.silverwin = False
         self.gamedraw = False
     def makemove(self, move):
-        self.board[move.startrow][move.startcol]='--'
+        self.board[move.startrow][move.startcol]='--' #moving the piece to a empty spot
         if self.board[move.endrow][move.endcol]=='--':
-            self.piececaptured.append(self.board[move.endrow][move.endcol])
+            self.piececaptured.append(self.board[move.endrow][move.endcol]) #capturing a piece
+            print(move.piecemoved,  move.getnotation() + "  " + str(self.secondmove), self.goldtomove) 
             if self.piececaptured[-1][1]=='F':
-                self.silverwin = True
+                self.silverwin = True  #if gF is captured the silver win the game 
                 if move.piecemoved[1] =='F':
                     if (move.endcol == 10 or move.endcol == 0) or (move.endrow == 10 or move.endrow == 0):
-                        self.goldwin = True
+                        self.goldwin = True #if the gF the is in those places gold win the game
             if self.piececaptured[-1][0] =='s':
                 self.silvercount-=1
                 if self.silvercount==0:
-                    self.goldwin = True
+                    self.goldwin = True #if all the silver pieces(sE) are captured then the gold wins the game
             if self.piececaptured[-1] == 'gE':
                 self.goldcount-=1
                 if self.goldcount == 0:
-                    self.silverwin = True
-            self.secondmove = True
+                    self.silverwin = True #if all the gold escorts(gE) are captured then the silver wins the game
+            self.secondmove = 2
         else:
+            print(move.piecemoved, move.getnotation() + "  " + str(self.secondmove), self.goldtomove ,"captured", move.piececaptured)
             if move.piecemoved[1] == 'F':
-                self.secondmove = True 
+                self.secondmove = 2 
                 if (move.endCol == 10 or move.endCol == 0) or (move.endRow == 0 or move.endRow == 10):
-                    self.goldwin = True
-            self.secondmove = True
+                    self.goldwin = True #if gF is in those places and its second chance then the  gold wins
+            self.secondmove +=1
         self.board[move.endrow][move.endcol] = move.piecemoved
         self.movelog.append(move)
-        if self.secondmove == True:
+        if self.secondmove == 2: #second move description
             self.goldtomove= not self.goldtomove
             self.breaktimer+=1
-            self.secondmove = False
+            self.secondmove = 0
 
     def undomove(self):
         if len(self.movelog) != 0:
             move = self.movelog.pop()
             self.board[move.startrow][move.startcol] = move.piecemoved
             self.board[move.endrow][move.endcol] = move.piececaptured
-            if move.piecemoved[1]=='F':
-                self.secondmove =False            
+            if move.piecemoved[1]=='F': 
+                self.secondmove =0            
                 self.goldtomove = not self.goldtomove
-            elif self.secondmove == False:
+            elif self.secondmove == 0:
                 self.goldtomove = not self.goldtomove
                 self.breaktimer -=1
+                self.secondmove = 1
             elif self.secondmove:
-                self.secondmove = False    
+                self.secondmove = 0    
 
     def getvalidmoves(self):
         return self.getallpossiblemoves()
@@ -84,13 +87,14 @@ class gamestate():
         return moves,capture
     
     def getescortmoves(self,r,c,moves,capture):
-        if  self.secondmove == False:
-            self.emptyspacemoves(r,c,moves)
-            self.capturemoves(r,c,capture)
-        else:
+        if  self.secondmove == 1:
             previouspiece = self.movelog[-1] #avoid moving the same piece
             if r != previouspiece.endrow or c != previouspiece.endcol:
                 self.emptyspacemoves(r,c,moves)
+            
+        else:
+            self.emptyspacemoves(r,c,moves)
+            self.capturemoves(r,c,capture)
         # directions = ((-1,0),(0,-1),(1,0),(0,1)) #up, left, down, right
         # enemy_color = 's' if self.goldtomove else 'g'
         # for d in directions:
@@ -125,7 +129,7 @@ class gamestate():
         
 
     def getflagmoves(self,r,c,moves,capture):
-        if  self.secondmove == False:
+        if  self.secondmove == 0:
             self.emptyspacemoves(r,c,moves)
             self.capturemoves(r,c,moves)
         
@@ -181,7 +185,7 @@ class Move():
         if isinstance(other, Move):
             return self.moveid == other.moveid
 
-    def getchessnotation(self):
+    def getnotation(self):
         return self.getrankfile(self.startrow, self.startcol) + self.getrankfile(self.endrow, self.endcol)
 
     def getrankfile(self,r,c):
