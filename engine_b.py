@@ -15,6 +15,7 @@ class gamestate():
                     ]
         self.goldtomove =True
         self.movelog = []
+        self.piececaptured= []
         self.movefunctions = {'E':self.getescortmoves,'F':self.getflagmoves}
         self.secondmove = False
         self.breaktimer = 0
@@ -26,23 +27,24 @@ class gamestate():
     def makemove(self, move):
         self.board[move.startrow][move.startcol]='--'
         if self.board[move.endrow][move.endcol]=='--':
-            self.board[move.endrow][endcol]= self.piececaptured
-            if piececaptured[1]=='F':
+            self.piececaptured.append(self.board[move.endrow][move.endcol])
+            if self.piececaptured[-1][1]=='F':
                 self.silverwin = True
                 if move.piecemoved[1] =='F':
                     if (move.endcol == 10 or move.endcol == 0) or (move.endrow == 10 or move.endrow == 0):
                         self.goldwin = True
-            if self.piececaptured[0] =='s':
+            if self.piececaptured[-1][0] =='s':
                 self.silvercount-=1
                 if self.silvercount==0:
                     self.goldwin = True
-            if self.piececaptured == 'gE':
+            if self.piececaptured[-1] == 'gE':
                 self.goldcount-=1
                 if self.goldcount == 0:
                     self.silverwin = True
+            self.secondmove = True
         else:
-            if piecemoved[1] == 'F':
-                self.secondmove = True
+            if move.piecemoved[1] == 'F':
+                self.secondmove = True 
                 if (move.endCol == 10 or move.endCol == 0) or (move.endRow == 0 or move.endRow == 10):
                     self.goldwin = True
             self.secondmove = True
@@ -80,6 +82,7 @@ class gamestate():
                     piece = self.board[r][c][1]
                     self.movefunctions[piece](r,c,moves,capture)
         return moves,capture
+    
     def getescortmoves(self,r,c,moves,capture):
         if  self.secondmove == False:
             self.emptyspacemoves(r,c,moves)
