@@ -24,31 +24,22 @@ class gamestate():
         self.goldwin = False
         self.silverwin = False
         self.gamedraw = False
+        notation= True
     def makemove(self, move):
         self.board[move.startrow][move.startcol]='--' #moving the piece to a empty spot
+        if notation:
+            if move.piecemoved=='--':
+                print(move.piecemoved,  move.getnotation() + "  " + str(self.secondmove), self.goldtomove)
+            else:
+                print(move.piecemoved, move.getnotation() + "  " + str(self.secondmove), self.goldtomove ,"captured", move.piececaptured)
         if self.board[move.endrow][move.endcol]=='--':
             self.piececaptured.append(self.board[move.endrow][move.endcol]) #capturing a piece
-            print(move.piecemoved,  move.getnotation() + "  " + str(self.secondmove), self.goldtomove) 
-            if self.piececaptured[-1][1]=='F':
-                self.silverwin = True  #if gF is captured the silver win the game 
-                if move.piecemoved[1] =='F':
-                    if (move.endcol == 10 or move.endcol == 0) or (move.endrow == 10 or move.endrow == 0):
-                        self.goldwin = True #if the gF the is in those places gold win the game
-            if self.piececaptured[-1][0] =='s':
-                self.silvercount-=1
-                if self.silvercount==0:
-                    self.goldwin = True #if all the silver pieces(sE) are captured then the gold wins the game
-            if self.piececaptured[-1] == 'gE':
-                self.goldcount-=1
-                if self.goldcount == 0:
-                    self.silverwin = True #if all the gold escorts(gE) are captured then the silver wins the game
+            
             self.secondmove = 2
-        else:
-            print(move.piecemoved, move.getnotation() + "  " + str(self.secondmove), self.goldtomove ,"captured", move.piececaptured)
-            if move.piecemoved[1] == 'F':
+        elif move.piecemoved[1] == 'F':
                 self.secondmove = 2 
-                if (move.endCol == 10 or move.endCol == 0) or (move.endRow == 0 or move.endRow == 10):
-                    self.goldwin = True #if gF is in those places and its second chance then the  gold wins
+        else:
+           
             self.secondmove +=1
         self.board[move.endrow][move.endcol] = move.piecemoved
         self.movelog.append(move)
@@ -162,7 +153,25 @@ class gamestate():
                     if r+1 < 11:#down
                         if self.board[r+1][end_col][0] == enemy_color:
                             capture.append(Move((r,c),(r-1,end_col),self.board))
-
+    '''under development'''
+    def gamefinal(self):
+        if self.piececaptured[-1][1]=='F':
+                self.silverwin = True  #if gF is captured the silver win the game 
+                if move.piecemoved[1] =='F':
+                    if (move.endcol == 10 or move.endcol == 0) or (move.endrow == 10 or move.endrow == 0):
+                        self.goldwin = True #if the gF the is in those places gold win the game
+            if self.piececaptured[-1][0] =='s':
+                self.silvercount-=1
+                if self.silvercount==0:
+                    self.goldwin = True #if all the silver pieces(sE) are captured then the gold wins the game
+            if self.piececaptured[-1] == 'gE':
+                self.goldcount-=1
+                if self.goldcount == 0:
+                    self.silverwin = True #if all the gold escorts(gE) are captured then the silver wins the game
+            if move.piecemoved[1] == 'F':
+                self.secondmove = 2 
+                if (move.endCol == 10 or move.endCol == 0) or (move.endRow == 0 or move.endRow == 10):
+                    self.goldwin = True #if gF is in those places and its second chance then the  gold wins
 class Move():
     ranks_to_rows = {'1':10,'2':9,'3':8,
                     '4':7,'5':6,'6':5,'7':4,'8':3,'9':2,'10':1,'11':0}
