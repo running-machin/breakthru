@@ -43,7 +43,7 @@ def main():
                         playerclicks.append(sqselected)
                     if len(playerclicks) == 2:
                         move =engine_b.Move(playerclicks[0],playerclicks[1],gs.board)    
-                        print(move.getchessnotation())
+                        #print(move.getnotation())
                         if move in validmoves :
                             gs.makemove(move)
                             movemade = True
