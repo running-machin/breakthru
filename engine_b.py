@@ -24,29 +24,41 @@ class gamestate():
         self.goldwin = False
         self.silverwin = False
         self.gamedraw = False
-        notation= True
+        self.notation= True
     def makemove(self, move):
         self.board[move.startrow][move.startcol]='--' #moving the piece to a empty spot
-        if notation:
-            if move.piecemoved=='--':
-                print(move.piecemoved,  move.getnotation() + "  " + str(self.secondmove), self.goldtomove)
-            else:
-                print(move.piecemoved, move.getnotation() + "  " + str(self.secondmove), self.goldtomove ,"captured", move.piececaptured)
-        if self.board[move.endrow][move.endcol]=='--':
-            self.piececaptured.append(self.board[move.endrow][move.endcol]) #capturing a piece
-            
-            self.secondmove = 2
-        elif move.piecemoved[1] == 'F':
-                self.secondmove = 2 
-        else:
-           
-            self.secondmove +=1
         self.board[move.endrow][move.endcol] = move.piecemoved
         self.movelog.append(move)
-        if self.secondmove == 2: #second move description
-            self.goldtomove= not self.goldtomove
-            self.breaktimer+=1
+        if move.piecemoved[1] == 'F':
+                self.secondmove += 1
+        self.secondmove += 1
+        if self.secondmove == 2:
+            self.goldtomove = not self.goldtomove
             self.secondmove = 0
+            self.breaktimer += 1
+        
+        
+        '''some bug in this'''
+        #self.board[move.startrow][move.startcol]='--' #moving the piece to a empty spot
+        # if self.notation:#for debugging purposes
+        #     if move.piecemoved=='--':
+        #         print(move.piecemoved,  move.getnotation() + "  " + str(self.secondmove), self.goldtomove)
+        #     else:
+        #         print(move.piecemoved, move.getnotation() + "  " + str(self.secondmove), self.goldtomove ,"captured", move.piececaptured)
+        # if self.board[move.endrow][move.endcol]=='--':
+        #     self.piececaptured.append(self.board[move.endrow][move.endcol]) #capturing a piece
+            
+        #     self.secondmove = 2
+        # elif move.piecemoved[1] == 'F':
+        #         self.secondmove = 2 
+        # else:  
+        #     self.secondmove +=1
+        # self.board[move.endrow][move.endcol] = move.piecemoved
+        # self.movelog.append(move)
+        # if self.secondmove == 2: #second move description
+        #     self.goldtomove= not self.goldtomove
+        #     self.breaktimer+=1
+        #     self.secondmove = 0
 
     def undomove(self):
         if len(self.movelog) != 0:
@@ -132,7 +144,7 @@ class gamestate():
             for i in range(1,11):
                 end_row = r + d[0] * i
                 end_col = c + d[1] * i
-                if 0<= end_row < 10 and 0<= end_col < 10:
+                if 0<= end_row < 11 and 0<= end_col < 11:
                     end_piece = self.board[end_row][end_col]
                     if end_piece == '--':
                         moves.append(Move((r,c),(end_row,end_col),self.board))
@@ -144,22 +156,31 @@ class gamestate():
     def capturemoves(self,r,c,capture):
         enemy_color = 's' if self.goldtomove else 'g'
         if self.secondmove == 0 :
-            for i in range(0,2):
-                end_col = c-1 if i == 0 else c+1 #left and right
-                if 0<= end_col < 11:
-                    if r-1 >= 0: #up
-                        if self.board[r-1][end_col][0] == enemy_color:
-                            capture.append(Move((r,c),(r-1,end_col),self.board))
-                    if r+1 < 11:#down
-                        if self.board[r+1][end_col][0] == enemy_color:
-                            capture.append(Move((r,c),(r-1,end_col),self.board))
+            if self.board [r+1][c-1][0] == enemy_color: #enemy piece to capture left and up
+                capture.append(Move((r,c),(r+1,c-1),self.board))
+            elif self.board [r-1][c-1][0] == enemy_color: #enemy piece to capture left and down
+                capture.append(Move((r,c),(r-1,c-1),self.board))
+            elif self.board [r+1][c+1][0]== enemy_color:#enemy piece to capture right and up
+                capture.append(Move((r,c),(r+1,c+1),self.board))
+            elif self.board [r-1][c+1][0]== enemy_color:#enemy piece to capture right and down
+                capture.append(Move((r,c),(r-1,c+1),self.board))
+            
+            # for i in range(0,2):
+            #     end_col = c-1 if i == 0 else c+1 #left and right
+            #     if 0<= end_col < 11:
+            #         if r-1 >= 0: #up
+            #             if self.board[r-1][end_col][0] == enemy_color:
+            #                 capture.append(Move((r,c),(r-1,end_col),self.board))
+            #         if r+1 < 11:#down
+            #             if self.board[r+1][end_col][0] == enemy_color:
+            #                 capture.append(Move((r,c),(r-1,end_col),self.board))
     '''under development'''
     def gamefinal(self):
         if self.piececaptured[-1][1]=='F':
-                self.silverwin = True  #if gF is captured the silver win the game 
-                if move.piecemoved[1] =='F':
-                    if (move.endcol == 10 or move.endcol == 0) or (move.endrow == 10 or move.endrow == 0):
-                        self.goldwin = True #if the gF the is in those places gold win the game
+            self.silverwin = True  #if gF is captured the silver win the game 
+            if move.piecemoved[1] =='F':
+                if (move.endcol == 10 or move.endcol == 0) or (move.endrow == 10 or move.endrow == 0):
+                    self.goldwin = True #if the gF the is in those places gold win the game
             if self.piececaptured[-1][0] =='s':
                 self.silvercount-=1
                 if self.silvercount==0:
