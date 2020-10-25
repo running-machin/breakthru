@@ -1,6 +1,6 @@
 import pygame as p
 import engine_b 
-
+import ai
 WIDTH= HEIGHT = 517
 DIMENSION = 11
 SQ_SIZE = HEIGHT// DIMENSION
@@ -31,6 +31,13 @@ def main():
             for e in p.event.get():
                 if e.type ==p.QUIT:
                     running =False
+                elif not gs.goldtomove:
+                    move = ai.select_minmax_move(gs)
+                    gs.makemove(move)
+                    movemade= True
+                    animate =True
+                    sqselected =()
+                    playerclicks =[]
                 elif e.type == p.MOUSEBUTTONDOWN:
                     location = p.mouse.get_pos()
                     col = location[0]//SQ_SIZE
@@ -41,6 +48,7 @@ def main():
                     else:
                         sqselected= (row,col)
                         playerclicks.append(sqselected)
+                                        
                     if len(playerclicks) == 2:
                         move =engine_b.Move(playerclicks[0],playerclicks[1],gs.board)    
                         #print(move.getnotation())
