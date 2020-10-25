@@ -3,13 +3,28 @@ import engine_b
 from copy import deepcopy
 global_depth=4
 eng = engine_b.gamestate
+next_s=deepcopy(eng)
+
+def __init__(self):
+        self.global_depth=4
+        self.best_move=""
 #move = eng.move
-def selectmove( gs):
+
+def select_minmax_move(self,gs):
     validmoves,capturemoves = gs.getvalidmoves()
-    if len(capturemoves) !=0 :
-        aimove = random.choice(capturemoves)
-    else:
-        aimove = random.choice(validmoves)
+    #minmax/alphabeta
+    aimove,minmax_values= minmax(next_s,self.global_depth,100000,-100000,"")
+    
+    return aimove
+def selectmove(gs):
+    validmoves,capturemoves = gs.getvalidmoves()
+    #minmax/alphabeta
+    aimove= alpha_beta(next_s,global_depth,100000,-100000,"")
+    """random AI"""
+    # if len(capturemoves) !=0 :
+    #     aimove = random.choice(capturemoves)
+    # else:
+    #     aimove = random.choice(validmoves)
     
     # best_score = -1000
     # temp_board= gs.board.copy()
@@ -22,35 +37,55 @@ def selectmove( gs):
     print (aimove)
     return aimove
 
-#totally wont work!!        
-def alpha_beta(self,state,depth,beta,alpha):
+def minmax(self,state,depth,moves,scores,is_max):
+        self.bestmove=""
+        validmoves,capturemoves = next_s.getvalidmoves()
+        moves =  capturemoves+validmoves
+        if (depth==0 and len(moves)==0):
+            return evaluation_function(moves)
+        best_value = 100000 if is_max else -100000
+        for move in moves:
+            value = (evaluation_function(moves))
+            moves, value =self.minmax(depth-1,next_s,not is_max)
+
+            if is_max and best_value< value:
+                best_value=value
+                bestmove = move
+            elif (not is_max) and best_value>value:
+                best_value=value
+                bestmove = move
+        return bestmove, best_value
+
+        
+       
+def alpha_beta(gs,depth,beta,alpha,list):
+    
     best_move=""
     validmoves,capturemoves = next_s.getvalidmoves()
-    listx =  capturemoves+validmoves
-    if (depth==0 and len(listx)==0):
-        val = evaluation_function(listx)   #move+score*(player*2-1)
-    for i in listx:
-        next_s.makemove(i)
-        value = alpha_beta(depth-1,beta,alpha,list,player)
+    moves =  capturemoves+validmoves
+    if (depth==0 and len(moves)==0):
+        val = evaluation_function(moves)   
+    for move in moves:
+        next_s.makemove(move)
+        value = alpha_beta(gs,depth-1,beta,alpha,moves)
         if value<=beta:
             beta=value
-            if (depth==global_depth):bestmove=i  #move is not correct
+            if (depth==global_depth): break 
         else:
             if value>alpha:
-                if (depth==global_depth):bestmove=i  #the whole thing might not be correct
+                if (depth==global_depth):
+                    best_move=move  
         if alpha>=beta:
                 bestvalue=value
-                bestmove = bestmove
+                best_move = move
         else:
             bestvalue = beta
-    del validmoves,capturemoves
+    return best_move
 
 
-def next_s(self,move,gs):
-    nextgs=deepcopy(gs)
-    nextgs.makemove(move)
-    return nextgs
-   
+# def next_s(move,gs):
+#     nextgs=deepcopy(gs)
+    
 
 def score_position(self,gs):
     return 0
@@ -69,5 +104,11 @@ def evaluation_function(self):
 #         if (move.endcol == 10 or move.endcol == 0) or (move.endrow == 10 or move.endrow == 0):
 #             score = 1000
     return 0    
-class minmax:
-    pass
+
+    
+    
+    
+
+
+    
+        
